@@ -16,6 +16,6 @@ strip = true
 # panic = "abort"
 
 [dependencies]
-clap = { version = "4.5.16", features = ["derive", "unicode", "wrap_help"] }
-image = { version = "0.25.2", features = ["nasm"] }
-thiserror = "1.0.63"
+clap = { version = "4.5.20", features = ["derive", "unicode", "wrap_help"] }
+image = { version = "0.25.4", features = ["nasm"] }
+thiserror = "1.0.65"
