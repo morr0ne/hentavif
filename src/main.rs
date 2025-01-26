@@ -5,9 +5,7 @@ use std::{
 };
 
 use clap::Parser;
-use image::{
-    codecs::avif::AvifEncoder, ExtendedColorType, ImageEncoder, ImageError, ImageReader, RgbaImage,
-};
+use image::{codecs::avif::AvifEncoder, DynamicImage, ImageEncoder, ImageError, ImageReader};
 
 #[derive(Debug, thiserror::Error)]
 enum Error {
@@ -43,8 +41,7 @@ fn main() -> Result<(), Error> {
 
     let image = ImageReader::new(Cursor::new(image_buffer))
         .with_guessed_format()?
-        .decode()?
-        .into_rgba8();
+        .decode()?;
 
     encode(image, speed, quality, output)?;
 
@@ -52,7 +49,7 @@ fn main() -> Result<(), Error> {
 }
 
 fn encode<P: AsRef<Path>>(
-    image: RgbaImage,
+    image: DynamicImage,
     speed: u8,
     quality: u8,
     output: P,
@@ -60,10 +57,10 @@ fn encode<P: AsRef<Path>>(
     let encoder = AvifEncoder::new_with_speed_quality(File::create(output)?, speed, quality);
 
     encoder.write_image(
-        image.as_raw(),
+        image.as_bytes(),
         image.width(),
         image.height(),
-        ExtendedColorType::Rgba8,
+        image.color().into(),
     )?;
 
     Ok(())
