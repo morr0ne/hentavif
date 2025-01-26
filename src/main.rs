@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{self, stdin, Cursor, Read},
+    io::{self, stdin, BufWriter, Cursor, Read, Write},
     path::{Path, PathBuf},
 };
 
@@ -54,7 +54,8 @@ fn encode<P: AsRef<Path>>(
     quality: u8,
     output: P,
 ) -> Result<(), Error> {
-    let encoder = AvifEncoder::new_with_speed_quality(File::create(output)?, speed, quality);
+    let mut buf = BufWriter::new(File::create(output)?);
+    let encoder = AvifEncoder::new_with_speed_quality(&mut buf, speed, quality);
 
     encoder.write_image(
         image.as_bytes(),
@@ -62,6 +63,8 @@ fn encode<P: AsRef<Path>>(
         image.height(),
         image.color().into(),
     )?;
+
+    buf.flush()?;
 
     Ok(())
 }
